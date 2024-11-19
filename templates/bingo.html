@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bingo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Bienvenido al Bingo</h1>
+        <div class="mensaje">
+            {% if mensaje %}
+                <p>{{ mensaje }}</p>
+            {% endif %}
+        </div>
+
+        <!-- Muestra las cartillas del usuario -->
+        <div class="cartillas">
+            {% for cartilla in cartillas %}
+                <div class="cartilla {% if cartilla.identifier in ganadoras %}ganadora{% endif %}">
+                    <h2>{{ cartilla.identifier }}</h2>
+                    <table class="bingo-table">
+                        <tr>
+                            <th>B</th>
+                            <th>I</th>
+                            <th>N</th>
+                            <th>G</th>
+                            <th>O</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                {% for num in cartilla.numbers['B'] %}
+                                    <span class="{% if num in numeros_llamados %}marcado{% endif %}">{{ num }}</span><br>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for num in cartilla.numbers['I'] %}
+                                    <span class="{% if num in numeros_llamados %}marcado{% endif %}">{{ num }}</span><br>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for num in cartilla.numbers['N'] %}
+                                    <span class="{% if num in numeros_llamados %}marcado{% endif %}">{{ num }}</span><br>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for num in cartilla.numbers['G'] %}
+                                    <span class="{% if num in numeros_llamados %}marcado{% endif %}">{{ num }}</span><br>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for num in cartilla.numbers['O'] %}
+                                    <span class="{% if num in numeros_llamados %}marcado{% endif %}">{{ num }}</span><br>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            {% endfor %}
+        </div>        
+
+        <!-- Muestra el formulario de números -->
+        {% if mostrar_formulario %}
+            <div class="formulario">
+                <form method="POST">
+                    <label for="numero">Número llamado:</label>
+                    <input type="text" id="numero" name="numero" placeholder="Ingresa el número">
+                    <button type="submit">Marcar</button>
+                </form>
+            </div>
+        {% endif %}
+
+        <!-- Muestra el botón de reiniciar -->
+        {% if mostrar_boton_reinicio %}
+            <form method="POST" action="{{ url_for('reiniciar') }}">
+                <button type="submit" class="boton-reinicio">Reiniciar Cartillas</button>
+            </form>
+        {% endif %}
+
+        <!-- Mostrar la figura seleccionada -->
+        <div class="figura-seleccionada">
+            <h3>Figura seleccionada: {{ figura|capitalize }}</h3>
+        </div>
+    </div>
+</body>
+</html>

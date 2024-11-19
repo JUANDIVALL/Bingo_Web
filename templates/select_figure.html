@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seleccionar Figura</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Selecciona una figura</h1>
+        <form action="/select_figure" method="POST">
+            <button type="submit" name="figura" value="full">Full</button>
+            <button type="submit" name="figura" value="l">L</button>
+            <button type="submit" name="figura" value="i">I</button>
+            <button type="submit" name="figura" value="o">O</button>
+            <button type="submit" name="figura" value="u">U</button>
+        </form>
+    </div>
+</body>
+</html>

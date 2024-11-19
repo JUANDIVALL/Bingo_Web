@@ -1,0 +1,144 @@
+/* Archivo: static/style.css */
+body {
+    background-color: #121212;
+    color: #CBA135;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.container {
+    background-color: #1E1E1E;
+    padding: 20px;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 800px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+h1 {
+    color: #CBA135;
+}
+
+h2 {
+    color: #CBA135;
+}
+
+.mensaje p {
+    background-color: #ff0000;
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.cartillas {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.cartilla {
+    background-color: #273B5A;
+    margin: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    width: 200px;
+    text-align: center;
+}
+
+table.bingo-table {
+    width: 100%;
+    margin-top: 10px;
+    border-collapse: collapse;
+}
+
+table.bingo-table th,
+table.bingo-table td {
+    padding: 5px;
+    border: 1px solid #CBA135;
+    text-align: center;
+}
+
+/* Añadir un poco más de margen entre cada fila */
+table.bingo-table tr {
+    margin-bottom: 10px;
+}
+
+.formulario {
+    margin-top: 20px;
+}
+
+input[type="text"] {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #CBA135;
+    background-color: #273B5A;
+    color: white;
+    width: 200px;
+}
+
+button {
+    background-color: #CBA135;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #121212;
+}
+
+.figura-seleccionada {
+    margin-top: 20px;
+}
+
+input[type="password"], input[type="text"] {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #CBA135;
+    background-color: #273B5A;
+    color: white;
+    width: 200px;
+}
+
+/* Añadir espacio entre el botón y las casillas en la página de Bingo */
+form button {
+    margin-top: 5px;
+}
+
+.bingo-table {
+    margin-top: 5px;
+}
+
+form {
+    margin-top: 1px;
+}
+
+figura-seleccionada, .numeros-llamados {
+    margin-top: 30px;
+}
+
+/* Si hay más botones, les damos algo de margen para separación */
+form button {
+    margin-bottom: 20px;
+}
+
+.formulario button {
+    margin-left: 10px;
+}
+
+.marcado {
+    background-color: #1E1E1E;
+    color: white;
+    border-radius: 30px;
+    padding: 2px;
+}
