@@ -189,7 +189,7 @@ def reiniciar():
     return redirect(url_for("select_figure"))
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+
 
 #--------------------------------------------------------------------------------------------------------------------
 #                                                    CREAR CARTILLAS
@@ -295,7 +295,7 @@ if __name__ == "__main__":
 #--------------------------------------------------------------------------------------------------------------------
 
     # EJEMPLO: crear_usuario("nombre_usuario", "contraseña_usuario", [nombre_cartilla_1, nombre_cartilla_2, ...])
-    crear_usuario("admin", "JDVL0509.", [N_1596,N_1597,N_1598,N_1599,N_1600,N_1601,N_1602,N_1603,N_1604,N_1605])
+    crear_usuario("admin", "1234", [N_1596,N_1597,N_1598,N_1599,N_1600,N_1601,N_1602,N_1603,N_1604,N_1605])
 
 
 #  Ejecutar Bingo-Web
