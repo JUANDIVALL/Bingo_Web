@@ -1,194 +1,194 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import os
 
-# Inicializar la aplicación Flask
-app = Flask(__name__)
-app.secret_key = "clave_secreta_para_sesiones"  # Cambia esto a una clave segura
+def crear_app():
 
-# Base de datos simulada para usuarios y cartillas
-usuarios = {}
+    # Inicializar la aplicación Flask
+    app = Flask(__name__)
+    app.secret_key = "clave_secreta_para_sesiones"  # Cambia esto a una clave segura
 
-# Clase Cartilla
-class BingoCard:
-    def __init__(self, identifier, numbers):
-        self.identifier = identifier
-        self.numbers = numbers  # Se asume que "numbers" es un diccionario con las letras BINGO
-        self.marked_numbers = {letter: [] for letter in "BINGO"}
+    # Base de datos simulada para usuarios y cartillas
+    usuarios = {}
 
-    def mark_number(self, number):
-        """Marca un número si está presente en la cartilla."""
-        for letter in "BINGO":
-            if number in self.numbers[letter] and number not in self.marked_numbers[letter]:
-                self.marked_numbers[letter].append(number)
-                return True
-        return False
+    # Clase Cartilla
+    class BingoCard:
+        def __init__(self, identifier, numbers):
+            self.identifier = identifier
+            self.numbers = numbers  # Se asume que "numbers" es un diccionario con las letras BINGO
+            self.marked_numbers = {letter: [] for letter in "BINGO"}
 
-    def check_figure(self, figure):
-        """Verifica si la cartilla cumple con la figura dada."""
-        if figure == "full":
-            return (
-                len(self.marked_numbers["B"]) == 5 and 
-                len(self.marked_numbers["I"]) == 5 and 
-                len(self.marked_numbers["N"]) == 4 and
-                len(self.marked_numbers["G"]) == 5 and
-                len(self.marked_numbers["O"]) == 5
-            )
-        
-        elif figure == "i":
-            return len(self.marked_numbers["N"]) == 4
+        def mark_number(self, number):
+            """Marca un número si está presente en la cartilla."""
+            for letter in "BINGO":
+                if number in self.numbers[letter] and number not in self.marked_numbers[letter]:
+                    self.marked_numbers[letter].append(number)
+                    return True
+            return False
 
-        elif figure == "o":
-            return (
-                len(self.marked_numbers["B"]) == 5 and
-                len(self.marked_numbers["O"]) == 5 and
-                self.numbers["I"][0] in self.marked_numbers["I"] and
-                self.numbers["I"][-1] in self.marked_numbers["I"] and
-                self.numbers["N"][0] in self.marked_numbers["N"] and
-                self.numbers["N"][-1] in self.marked_numbers["N"] and
-                self.numbers["G"][0] in self.marked_numbers["G"] and
-                self.numbers["G"][-1] in self.marked_numbers["G"]
-            )
-        
-        elif figure == "u":
-            return (
-                len(self.marked_numbers["B"]) == 5 and
-                len(self.marked_numbers["O"]) == 5 and
-                self.numbers["I"][-1] in self.marked_numbers["I"] and
-                self.numbers["N"][-1] in self.marked_numbers["N"] and
-                self.numbers["G"][-1] in self.marked_numbers["G"]
-            )
+        def check_figure(self, figure):
+            """Verifica si la cartilla cumple con la figura dada."""
+            if figure == "full":
+                return (
+                    len(self.marked_numbers["B"]) == 5 and 
+                    len(self.marked_numbers["I"]) == 5 and 
+                    len(self.marked_numbers["N"]) == 4 and
+                    len(self.marked_numbers["G"]) == 5 and
+                    len(self.marked_numbers["O"]) == 5
+                )
+            
+            elif figure == "i":
+                return len(self.marked_numbers["N"]) == 4
 
-        elif figure == "l":
-            return (
-                len(self.marked_numbers["B"]) == 5 and
-                self.numbers["I"][-1] in self.marked_numbers["I"] and
-                self.numbers["N"][-1] in self.marked_numbers["N"] and
-                self.numbers["G"][-1] in self.marked_numbers["G"] and
-                self.numbers["O"][-1] in self.marked_numbers["O"]
-            )
+            elif figure == "o":
+                return (
+                    len(self.marked_numbers["B"]) == 5 and
+                    len(self.marked_numbers["O"]) == 5 and
+                    self.numbers["I"][0] in self.marked_numbers["I"] and
+                    self.numbers["I"][-1] in self.marked_numbers["I"] and
+                    self.numbers["N"][0] in self.marked_numbers["N"] and
+                    self.numbers["N"][-1] in self.marked_numbers["N"] and
+                    self.numbers["G"][0] in self.marked_numbers["G"] and
+                    self.numbers["G"][-1] in self.marked_numbers["G"]
+                )
+            
+            elif figure == "u":
+                return (
+                    len(self.marked_numbers["B"]) == 5 and
+                    len(self.marked_numbers["O"]) == 5 and
+                    self.numbers["I"][-1] in self.marked_numbers["I"] and
+                    self.numbers["N"][-1] in self.marked_numbers["N"] and
+                    self.numbers["G"][-1] in self.marked_numbers["G"]
+                )
 
-        return False
+            elif figure == "l":
+                return (
+                    len(self.marked_numbers["B"]) == 5 and
+                    self.numbers["I"][-1] in self.marked_numbers["I"] and
+                    self.numbers["N"][-1] in self.marked_numbers["N"] and
+                    self.numbers["G"][-1] in self.marked_numbers["G"] and
+                    self.numbers["O"][-1] in self.marked_numbers["O"]
+                )
 
-    def reset_marks(self):
-        """Reinicia las marcas de la cartilla."""
-        self.marked_numbers = {letter: [] for letter in "BINGO"}
+            return False
 
-# Función para crear un usuario
-def crear_usuario(usuario, contraseña, cartillas):
-    """Función para crear un usuario con su contraseña y asociarle cartillas."""
-    if usuario in usuarios:
-        print("El usuario ya existe.")
-    else:
-        usuarios[usuario] = {"contraseña": contraseña, "cartillas": cartillas}
-        print(f"Usuario {usuario} creado con éxito.")
+        def reset_marks(self):
+            """Reinicia las marcas de la cartilla."""
+            self.marked_numbers = {letter: [] for letter in "BINGO"}
 
-# Función para crear una cartilla
-def crear_cartilla(identifier, numbers):
-    """Crea una cartilla con identificador y números."""
-    return BingoCard(identifier, numbers)
-
-# Ruta de inicio de sesión
-@app.route("/", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        usuario = request.form["usuario"]
-        contraseña = request.form["contraseña"]
-        if usuario in usuarios and usuarios[usuario]["contraseña"] == contraseña:
-            session["usuario"] = usuario
-            session["numeros_llamados"] = []  # Inicializamos la lista de números llamados
-            return redirect(url_for("select_figure"))
+    # Función para crear un usuario
+    def crear_usuario(usuario, contraseña, cartillas):
+        """Función para crear un usuario con su contraseña y asociarle cartillas."""
+        if usuario in usuarios:
+            print("El usuario ya existe.")
         else:
-            mensaje = """Contraseña o Usuario incorrecto. 
-            Si quieres crear una cuenta, por favor escribe al +51 960065015."""
-            return render_template("login.html", mensaje=mensaje)
-    return render_template("login.html")
+            usuarios[usuario] = {"contraseña": contraseña, "cartillas": cartillas}
+            print(f"Usuario {usuario} creado con éxito.")
 
-# Ruta para seleccionar la figura
-@app.route("/select_figure", methods=["GET", "POST"])
-def select_figure():
-    if "usuario" not in session:
-        return redirect(url_for("login"))
-    if request.method == "POST":
-        session["figura"] = request.form["figura"]
-        return redirect(url_for("bingo"))
-    return render_template("select_figure.html")
+    # Función para crear una cartilla
+    def crear_cartilla(identifier, numbers):
+        """Crea una cartilla con identificador y números."""
+        return BingoCard(identifier, numbers)
 
-# Ruta principal del juego
-@app.route("/bingo", methods=["GET", "POST"])
-def bingo():
-    if "usuario" not in session:
-        return redirect(url_for("login"))
-    
-    usuario = session["usuario"]
-    figura = session.get("figura", "full")
-    mensaje = None
-    mostrar_formulario = True
-    mostrar_boton_reinicio = True
-    numeros_llamados = session.get("numeros_llamados", [])
-    cartilla_ganadora = None  # Variable para identificar la cartilla ganadora
-    
-    if request.method == "POST":
-        try:
-            numero = int(request.form["numero"])
-        except ValueError:
-            mensaje = "Por favor, ingresa un número válido."
-        else:
-            if numero > 75:
-                mensaje = "El número debe ser entre 1 y 75."
-            elif numero < 1:
-                mensaje = "El número debe ser mayor a 0."
-            elif numero not in numeros_llamados:
-                numeros_llamados.append(numero)
-                session["numeros_llamados"] = numeros_llamados
-                for cartilla in usuarios[usuario]["cartillas"]:
-                    if cartilla.mark_number(numero):
-                        if cartilla.check_figure(figura):
-                            mensaje = f"¡BINGO! La cartilla {cartilla.identifier} completó la figura {figura.upper()}."
-                            cartilla_ganadora = cartilla.identifier  # Identificar la cartilla ganadora
-                            mostrar_formulario = False
-                            mostrar_boton_reinicio = True
+    # Ruta de inicio de sesión
+    @app.route("/", methods=["GET", "POST"])
+    def login():
+        if request.method == "POST":
+            usuario = request.form["usuario"]
+            contraseña = request.form["contraseña"]
+            if usuario in usuarios and usuarios[usuario]["contraseña"] == contraseña:
+                session["usuario"] = usuario
+                session["numeros_llamados"] = []  # Inicializamos la lista de números llamados
+                return redirect(url_for("select_figure"))
             else:
-                mensaje = "Este número ya ha sido llamado."
+                mensaje = """Contraseña o Usuario incorrecto. 
+                Si quieres crear una cuenta, por favor escribe al +51 960065015."""
+                return render_template("login.html", mensaje=mensaje)
+        return render_template("login.html")
 
-    # Ordenar los números llamados en B-I-N-G-O
-    orden_bingo = {
-        "B": [],
-        "I": [],
-        "N": [],
-        "G": [],
-        "O": []
-    }
-    for numero in numeros_llamados:
-        for letter in "BINGO":
-            if numero in usuarios[usuario]["cartillas"][0].numbers[letter]:
-                orden_bingo[letter].append(numero)
-                break
+    # Ruta para seleccionar la figura
+    @app.route("/select_figure", methods=["GET", "POST"])
+    def select_figure():
+        if "usuario" not in session:
+            return redirect(url_for("login"))
+        if request.method == "POST":
+            session["figura"] = request.form["figura"]
+            return redirect(url_for("bingo"))
+        return render_template("select_figure.html")
 
-    return render_template("bingo.html", 
-                           mensaje=mensaje, 
-                           mostrar_formulario=mostrar_formulario,
-                           mostrar_boton_reinicio=mostrar_boton_reinicio, 
-                           numeros_llamados=numeros_llamados,
-                           cartillas=usuarios[usuario]["cartillas"], 
-                           figura=figura, 
-                           cartilla_ganadora=cartilla_ganadora,  # Enviar la cartilla ganadora
-                           orden_bingo=orden_bingo)
+    # Ruta principal del juego
+    @app.route("/bingo", methods=["GET", "POST"])
+    def bingo():
+        if "usuario" not in session:
+            return redirect(url_for("login"))
+        
+        usuario = session["usuario"]
+        figura = session.get("figura", "full")
+        mensaje = None
+        mostrar_formulario = True
+        mostrar_boton_reinicio = True
+        numeros_llamados = session.get("numeros_llamados", [])
+        cartilla_ganadora = None  # Variable para identificar la cartilla ganadora
+        
+        if request.method == "POST":
+            try:
+                numero = int(request.form["numero"])
+            except ValueError:
+                mensaje = "Por favor, ingresa un número válido."
+            else:
+                if numero > 75:
+                    mensaje = "El número debe ser entre 1 y 75."
+                elif numero < 1:
+                    mensaje = "El número debe ser mayor a 0."
+                elif numero not in numeros_llamados:
+                    numeros_llamados.append(numero)
+                    session["numeros_llamados"] = numeros_llamados
+                    for cartilla in usuarios[usuario]["cartillas"]:
+                        if cartilla.mark_number(numero):
+                            if cartilla.check_figure(figura):
+                                mensaje = f"¡BINGO! La cartilla {cartilla.identifier} completó la figura {figura.upper()}."
+                                cartilla_ganadora = cartilla.identifier  # Identificar la cartilla ganadora
+                                mostrar_formulario = False
+                                mostrar_boton_reinicio = True
+                else:
+                    mensaje = "Este número ya ha sido llamado."
 
-# Ruta para reiniciar las cartillas
-@app.route("/reiniciar", methods=["POST"])
-def reiniciar():
-    if "usuario" not in session:
-        return redirect(url_for("login"))
-    usuario = session["usuario"]
-    for cartilla in usuarios[usuario]["cartillas"]:
-        cartilla.reset_marks()
+        # Ordenar los números llamados en B-I-N-G-O
+        orden_bingo = {
+            "B": [],
+            "I": [],
+            "N": [],
+            "G": [],
+            "O": []
+        }
+        for numero in numeros_llamados:
+            for letter in "BINGO":
+                if numero in usuarios[usuario]["cartillas"][0].numbers[letter]:
+                    orden_bingo[letter].append(numero)
+                    break
 
-    # Limpiamos la lista de números llamados y la figura seleccionada
-    session["numeros_llamados"] = []
-    session["figura"] = None  # Limpiamos la figura seleccionada actual
-    return redirect(url_for("select_figure"))
+        return render_template("bingo.html", 
+                            mensaje=mensaje, 
+                            mostrar_formulario=mostrar_formulario,
+                            mostrar_boton_reinicio=mostrar_boton_reinicio, 
+                            numeros_llamados=numeros_llamados,
+                            cartillas=usuarios[usuario]["cartillas"], 
+                            figura=figura, 
+                            cartilla_ganadora=cartilla_ganadora,  # Enviar la cartilla ganadora
+                            orden_bingo=orden_bingo)
 
-if __name__ == "__main__":
+    # Ruta para reiniciar las cartillas
+    @app.route("/reiniciar", methods=["POST"])
+    def reiniciar():
+        if "usuario" not in session:
+            return redirect(url_for("login"))
+        usuario = session["usuario"]
+        for cartilla in usuarios[usuario]["cartillas"]:
+            cartilla.reset_marks()
+
+        # Limpiamos la lista de números llamados y la figura seleccionada
+        session["numeros_llamados"] = []
+        session["figura"] = None  # Limpiamos la figura seleccionada actual
+        return redirect(url_for("select_figure"))
 
 #--------------------------------------------------------------------------------------------------------------------
 #                                                    CREAR CARTILLAS
@@ -296,6 +296,12 @@ if __name__ == "__main__":
     # EJEMPLO: crear_usuario("nombre_usuario", "contraseña_usuario", [nombre_cartilla_1, nombre_cartilla_2, ...])
     crear_usuario("admin", "1234", [N_1596,N_1597,N_1598,N_1599,N_1600,N_1601,N_1602,N_1603,N_1604,N_1605])
 
+    return app
+    
+
+if __name__ == "__main__":
+
+    app=crear_app()
 
 #  Ejecutar Bingo-Web
     app.run(debug=True)
