@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session
-import os, time, random
-
+import os
 def crear_app():
 
     # Inicializar la aplicación Flask
@@ -110,39 +109,50 @@ def crear_app():
     def select_figure():
         if "usuario" not in session:
             return redirect(url_for("login"))
+
+        usuario = session["usuario"]
+        
+        # Asegurarse de que cada usuario tenga sus configuraciones
+        if usuario not in session:
+            session[usuario] = {"figura": None}
+
         if request.method == "POST":
-            session["figura"] = request.form["figura"]
-            time.sleep(random.randint(1,20))
+            figura_seleccionada = request.form["figura"]
+            session[usuario]["figura"] = figura_seleccionada  # Guardar la figura seleccionada por el usuario
             return redirect(url_for("bingo"))
+
         return render_template("select_figure.html")
+
 
     # Ruta principal del juego
     @app.route("/bingo", methods=["GET", "POST"])
     def bingo():
         if "usuario" not in session:
             return redirect(url_for("login"))
-        
+
         usuario = session["usuario"]
-        figura = session.get("figura", "full")
+        
+        # Obtener figura específica de la sesión del usuario
+        figura = session.get(usuario, {}).get("figura", "full")
+        
         mensaje = None
         mostrar_formulario = True
         mostrar_boton_reinicio = True
         numeros_llamados = session.get("numeros_llamados", [])
         cartilla_ganadora = None  # Variable para identificar la cartilla ganadora
-        
+
         if request.method == "POST":
             try:
                 numero = int(request.form["numero"])
             except ValueError:
                 mensaje = "Por favor, ingresa un número válido."
             else:
-                if numero > 75:
+                if numero > 75 or numero < 1:
                     mensaje = "El número debe ser entre 1 y 75."
-                elif numero < 1:
-                    mensaje = "El número debe ser mayor a 0."
                 elif numero not in numeros_llamados:
                     numeros_llamados.append(numero)
                     session["numeros_llamados"] = numeros_llamados
+                    
                     for cartilla in usuarios[usuario]["cartillas"]:
                         if cartilla.mark_number(numero):
                             if cartilla.check_figure(figura):
@@ -154,13 +164,7 @@ def crear_app():
                     mensaje = "Este número ya ha sido llamado."
 
         # Ordenar los números llamados en B-I-N-G-O
-        orden_bingo = {
-            "B": [],
-            "I": [],
-            "N": [],
-            "G": [],
-            "O": []
-        }
+        orden_bingo = {letter: [] for letter in "BINGO"}
         for numero in numeros_llamados:
             for letter in "BINGO":
                 if numero in usuarios[usuario]["cartillas"][0].numbers[letter]:
@@ -176,6 +180,7 @@ def crear_app():
                             figura=figura, 
                             cartilla_ganadora=cartilla_ganadora,  # Enviar la cartilla ganadora
                             orden_bingo=orden_bingo)
+
 
     # Ruta para reiniciar las cartillas
     @app.route("/reiniciar", methods=["POST"])
