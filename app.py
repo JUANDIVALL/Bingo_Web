@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session
-import os
+import os, time, random
 
 def crear_app():
 
@@ -112,6 +112,7 @@ def crear_app():
             return redirect(url_for("login"))
         if request.method == "POST":
             session["figura"] = request.form["figura"]
+            time.sleep(random.randint(1,20))
             return redirect(url_for("bingo"))
         return render_template("select_figure.html")
 
@@ -416,7 +417,7 @@ def crear_app():
 
     # EJEMPLO: crear_usuario("nombre_usuario", "contraseña_usuario", [nombre_cartilla_1, nombre_cartilla_2, ...])
     crear_usuario("admin", "JDVL0509.", [N_1596,N_1597,N_1598,N_1599,N_1600,N_1601,N_1602,N_1603,N_1604,N_1605])
-    
+
     crear_usuario("Sori2024", "Sori2024",[N_3468,N_3469,N_3470,N_3471,N_3472,N_3473,N_3474,N_3475,N_3476,N_3477,N_3478,N_3479,N_3480,N_3481,N_3482])
 
     return app
