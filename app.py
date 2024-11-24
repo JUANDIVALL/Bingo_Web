@@ -36,7 +36,7 @@ def crear_app():
                 )
             
             elif figure == "i":
-                return len(self.marked_numbers["N"]) == 5
+                return len(self.marked_numbers["N"]) == 4
 
             elif figure == "o":
                 return (
